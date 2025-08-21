@@ -17,15 +17,39 @@ Before you begin, ensure you have completed the following setup steps:
 
 Follow these steps to set up your environment to run the script.
 
-### 1. Install Dependencies
+### 1. Create a Virtual Environment
 
-You will need to install the required Python libraries. You can do this using pip:
+It is recommended to use a virtual environment to manage the dependencies for this script. 
+
+**On macOS and Linux:**
+
+```bash
+# Create a virtual environment
+python3 -m venv venv
+
+# Activate the virtual environment
+source venv/bin/activate
+```
+
+**On Windows:**
+
+```bash
+# Create a virtual environment
+python -m venv venv
+
+# Activate the virtual environment
+.\venv\Scripts\activate
+```
+
+### 2. Install Dependencies
+
+Once your virtual environment is activated, you can install the required Python libraries:
 
 ```bash
 pip install python-dotenv requests
 ```
 
-### 2. Configure Environment Variables
+### 3. Configure Environment Variables
 
 The script uses a `.env` file to manage configuration. 
 
