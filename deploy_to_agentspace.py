@@ -77,7 +77,14 @@ def register_agent(token, project_id, app_id, display_name, description, agent_r
         },
     }
     response = requests.post(url, headers=headers, json=payload)
-    print(response.json())
+    if response.status_code == 200:
+        try:
+            print(response.json())
+        except requests.exceptions.JSONDecodeError:
+            print("Agent registered successfully, but no JSON response was returned.")
+    else:
+        print(f"Error: {response.status_code}")
+        print(response.text)
 
 def view_agents(token, project_id, app_id):
     """Views the registered agents in Agentspace."""
