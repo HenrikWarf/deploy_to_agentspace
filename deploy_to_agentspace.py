@@ -32,14 +32,21 @@ def list_reasoning_engines(token, project_id, location):
     url = f"https://{location}-aiplatform.googleapis.com/v1/projects/{project_id}/locations/{location}/reasoningEngines"
     headers = {"Authorization": f"Bearer {token}"}
     response = requests.get(url, headers=headers)
-    data = response.json()
-    if "reasoningEngines" in data:
-        for engine in data["reasoningEngines"]:
-            print(f"Display Name: {engine.get('displayName')}")
-            print(f"Name: {engine.get('name')}")
-            print("-" * 20)
+    if response.status_code == 200:
+        try:
+            data = response.json()
+            if "reasoningEngines" in data:
+                for engine in data["reasoningEngines"]:
+                    print(f"Display Name: {engine.get('displayName')}")
+                    print(f"Name: {engine.get('name')}")
+                    print("-" * 20)
+            else:
+                print(data)
+        except requests.exceptions.JSONDecodeError:
+            print("Could not decode JSON response.")
     else:
-        print(data)
+        print(f"Error: {response.status_code}")
+        print(response.text)
 
 def list_agentspace_apps(token, project_id):
     """Lists the Agentspace apps."""
@@ -49,14 +56,21 @@ def list_agentspace_apps(token, project_id):
         "x-goog-user-project": project_id,
     }
     response = requests.get(url, headers=headers)
-    data = response.json()
-    if "engines" in data:
-        for engine in data["engines"]:
-            print(f"Display Name: {engine.get('displayName')}")
-            print(f"Name: {engine.get('name')}")
-            print("-" * 20)
+    if response.status_code == 200:
+        try:
+            data = response.json()
+            if "engines" in data:
+                for engine in data["engines"]:
+                    print(f"Display Name: {engine.get('displayName')}")
+                    print(f"Name: {engine.get('name')}")
+                    print("-" * 20)
+            else:
+                print(data)
+        except requests.exceptions.JSONDecodeError:
+            print("Could not decode JSON response.")
     else:
-        print(data)
+        print(f"Error: {response.status_code}")
+        print(response.text)
 
 def register_agent(token, project_id, app_id, display_name, description, agent_resource_path):
     """Registers an agent in Agentspace."""
@@ -95,7 +109,21 @@ def view_agents(token, project_id, app_id):
         "X-Goog-User-Project": project_id,
     }
     response = requests.get(url, headers=headers)
-    print(response.json())
+    if response.status_code == 200:
+        try:
+            data = response.json()
+            if "agents" in data:
+                for agent in data["agents"]:
+                    print(f"Display Name: {agent.get('displayName')}")
+                    print(f"Name: {agent.get('name')}")
+                    print("-" * 20)
+            else:
+                print(data)
+        except requests.exceptions.JSONDecodeError:
+            print("Could not decode JSON response.")
+    else:
+        print(f"Error: {response.status_code}")
+        print(response.text)
 
 def unregister_agent(token, project_id, agent_name):
     """Unregisters an agent from Agentspace."""
@@ -109,7 +137,8 @@ def unregister_agent(token, project_id, agent_name):
     if response.status_code == 200:
         print("Agent unregistered successfully.")
     else:
-        print(response.json())
+        print(f"Error: {response.status_code}")
+        print(response.text)
 
 def main():
     """Main function to handle command-line arguments."""
@@ -143,6 +172,13 @@ def main():
     description = os.getenv("DESCRIPTION")
     agent_resource_path = os.getenv("AGENT_RESOURCE_PATH")
     agent_name = os.getenv("AGENT_NAME")
+
+    # Automatically extract ID if full path is provided
+    if app_id and "/" in app_id:
+        app_id = app_id.split("/")[-1]
+
+    if agent_name and "/" in agent_name:
+        agent_name = agent_name.split("/")[-1]
 
     # Check for required environment variables
     if not project_id:
