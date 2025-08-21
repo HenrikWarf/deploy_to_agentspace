@@ -1,6 +1,6 @@
-# Registering an ADK Agent in Agentspace
+# ADK Agent Deployment Script
 
-This guide provides step-by-step instructions on how to register, view, and unregister an ADK (Agent Development Kit) agent in Agentspace.
+This guide explains how to use the `deploy_to_agentspace.py` script to manage your ADK (Agent Development Kit) agents in Agentspace.
 
 ## Prerequisites
 
@@ -13,120 +13,76 @@ Before you begin, ensure you have completed the following setup steps:
     *   **Important:** You may need to check the "Include Google-provided role grants" option to see the service account.
     *   Add the required `Vertex AI User` and `Vertex AI Viewer` permissions to the service account.
 
-## Configuration
+## Setup
 
-You'll need to define several environment variables to run the commands in this guide.
+Follow these steps to set up your environment to run the script.
+
+### 1. Install Dependencies
+
+You will need to install the required Python libraries. You can do this using pip:
 
 ```bash
-# Your Google Cloud Platform project ID
-export PROJECT_ID=""
-
-# Your Google Cloud Platform project number
-export ProjectNumber=""
-
-# The ID of your Agentspace application
-export APP_ID=""
-
-# A display name for your ADK agent
-export DISPLAY_NAME=""
-
-# A description for your ADK agent
-export DESCRIPTION=""
-
-# The resource path of your deployed reasoning agent
-export AGENT_RESOURCE_PATH=""
-
-# The GCP location where your reasoning engine is deployed (e.g., us-central1)
-export LOCATION="us-central1"
+pip install python-dotenv requests
 ```
 
-## Instructions
+### 2. Configure Environment Variables
 
-Follow these steps to manage your ADK agent in Agentspace.
+The script uses a `.env` file to manage configuration. 
 
-### 1. Obtain Your Access Token
+1.  A `.env` file should already be present in this directory. 
+2.  Open the `.env` file and fill in the values for each variable. 
 
-You will need an access token to authenticate with the GCP APIs. You can get one using the gcloud CLI:
-
-```bash
-TOKEN=$(gcloud auth print-access-token)
+```
+PROJECT_ID=""
+ProjectNumber=""
+APP_ID=""
+DISPLAY_NAME=""
+DESCRIPTION=""
+AGENT_RESOURCE_PATH=""
+LOCATION="us-central1"
+AGENT_NAME=""
 ```
 
-### 2. List Available Reasoning Engines
+## Usage
 
-This command helps you find the `AGENT_RESOURCE_PATH` for your deployed reasoning engine.
+You can run the script from your terminal using the following commands.
+
+### List Reasoning Engines
+
+To list the available reasoning engines and find your `AGENT_RESOURCE_PATH`:
 
 ```bash
-curl -X GET \
-  -H "Authorization: Bearer $TOKEN" \
-  "https://us-central1-aiplatform.googleapis.com/v1/projects/$PROJECT_ID/locations/$LOCATION/reasoningEngines"
+python deploy_to_agentspace.py list-engines
 ```
 
-### 3. List Agentspace Apps
+### List Agentspace Apps
 
-This command helps you find the `APP_ID` for your Agentspace application.
+To list your Agentspace applications and find your `APP_ID`:
 
 ```bash
-curl -X GET \
-  -H "Authorization: Bearer $TOKEN" \
-  -H "x-goog-user-project: $PROJECT_ID" \
-  "https://discoveryengine.googleapis.com/v1alpha/projects/$PROJECT_ID/locations/global/collections/default_collection/engines"
+python deploy_to_agentspace.py list-apps
 ```
 
-### 4. Register the ADK Agent
+### Register an Agent
 
-This command registers your ADK agent with Agentspace.
+To register your ADK agent with Agentspace:
 
 ```bash
-# Create the JSON payload for the registration request
-JSON_PAYLOAD=$(printf 
-    {
-        "displayName": "%s",
-        "description": "%s",
-        "adk_agent_definition": {
-          "tool_settings": {
-            "tool_description": "Tool Description"
-          },
-          "provisioned_reasoning_engine": {
-            "reasoning_engine": "%s"
-          }
-        }
-    }
-, "$DISPLAY_NAME", "$DESCRIPTION", "$AGENT_RESOURCE_PATH")
-
-# Send the registration request
-curl -X POST \
-  -H "Authorization: Bearer $TOKEN" \
-  -H "Content-Type: application/json" \
-  -H "x-goog-user-project: $PROJECT_ID" \
-  "https://discoveryengine.googleapis.com/v1alpha/projects/$PROJECT_ID/locations/global/collections/default_collection/engines/$APP_ID/assistants/default_assistant/agents" \
-  -d "$JSON_PAYLOAD"
+python deploy_to_agentspace.py register
 ```
 
-### 5. View Registered Agents
+### View Registered Agents
 
-After registering your agent, you can use this command to view all the agents registered in your Agentspace application.
+To see the agents that are currently registered in your Agentspace application:
 
 ```bash
-curl -X GET \
-  -H "Authorization: Bearer $TOKEN" \
-  -H "Content-Type: application/json" \
-  -H "X-Goog-User-Project: $PROJECT_ID" \
-  "https://discoveryengine.googleapis.com/v1alpha/projects/$PROJECT_ID/locations/global/collections/default_collection/engines/$APP_ID/assistants/default_assistant/agents"
+python deploy_to_agentspace.py view
 ```
 
-### 6. Unregister an Agent
+### Unregister an Agent
 
-If you need to remove an agent from Agentspace, you can use this command.
+To remove an agent from Agentspace:
 
 ```bash
-# The full name of the agent to unregister
-export AGENT_NAME="projects/your-project-id/locations/global/collections/default_collection/engines/your-app-id/assistants/default_assistant/agents/your-agent-id"
-
-# Send the delete request
-curl -X DELETE \
-  -H "Authorization: Bearer $TOKEN" \
-  -H "Content-Type: application/json" \
-  -H "X-Goog-User-Project: $PROJECT_ID" \
-  "https://discoveryengine.googleapis.com/v1alpha/$AGENT_NAME"
+python deploy_to_agentspace.py unregister
 ```
