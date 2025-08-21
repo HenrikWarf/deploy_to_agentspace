@@ -49,7 +49,14 @@ def list_agentspace_apps(token, project_id):
         "x-goog-user-project": project_id,
     }
     response = requests.get(url, headers=headers)
-    print(response.json())
+    data = response.json()
+    if "engines" in data:
+        for engine in data["engines"]:
+            print(f"Display Name: {engine.get('displayName')}")
+            print(f"Name: {engine.get('name')}")
+            print("-" * 20)
+    else:
+        print(data)
 
 def register_agent(token, project_id, app_id, display_name, description, agent_resource_path):
     """Registers an agent in Agentspace."""
