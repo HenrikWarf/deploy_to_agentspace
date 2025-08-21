@@ -177,9 +177,6 @@ def main():
     if app_id and "/" in app_id:
         app_id = app_id.split("/")[-1]
 
-    if agent_name and "/" in agent_name:
-        agent_name = agent_name.split("/")[-1]
-
     # Check for required environment variables
     if not project_id:
         print("Error: PROJECT_ID environment variable not set.")
