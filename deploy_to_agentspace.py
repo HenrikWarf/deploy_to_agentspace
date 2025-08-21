@@ -32,7 +32,14 @@ def list_reasoning_engines(token, project_id, location):
     url = f"https://{location}-aiplatform.googleapis.com/v1/projects/{project_id}/locations/{location}/reasoningEngines"
     headers = {"Authorization": f"Bearer {token}"}
     response = requests.get(url, headers=headers)
-    print(response.json())
+    data = response.json()
+    if "reasoningEngines" in data:
+        for engine in data["reasoningEngines"]:
+            print(f"Display Name: {engine.get('displayName')}")
+            print(f"Name: {engine.get('name')}")
+            print("-" * 20)
+    else:
+        print(data)
 
 def list_agentspace_apps(token, project_id):
     """Lists the Agentspace apps."""
