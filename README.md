@@ -51,19 +51,32 @@ pip install python-dotenv requests
 
 ### 3. Configure Environment Variables
 
-The script uses a `.env` file to manage configuration. 
-
-1.  A `.env` file should already be present in this directory. 
-2.  Open the `.env` file and fill in the values for each variable. 
+The script uses a `.env` file to manage configuration. Open the `.env` file in this directory and fill in the values for each variable as described below.
 
 ```
+# Your Google Cloud Platform project ID. This is required for all commands.
 PROJECT_ID=""
-ProjectNumber=""
-APP_ID=""
-DISPLAY_NAME=""
-DESCRIPTION=""
-AGENT_RESOURCE_PATH=""
+
+# The GCP location where your reasoning engine is deployed (e.g., us-central1). Required for 'list-engines'.
 LOCATION="us-central1"
+
+# The ID of your Agentspace application. Required for 'register' and 'view'.
+# You can find this by running 'python deploy_to_agentspace.py list-apps'.
+# You can provide the full resource name and the script will extract the ID.
+APP_ID=""
+
+# A display name for your new ADK agent. Required for 'register'.
+DISPLAY_NAME=""
+
+# A description for your new ADK agent. Required for 'register'.
+DESCRIPTION=""
+
+# The resource path of your deployed reasoning agent. Required for 'register'.
+# You can find this by running 'python deploy_to_agentspace.py list-engines'.
+AGENT_RESOURCE_PATH=""
+
+# The full resource name of the agent you want to unregister. Required for 'unregister'.
+# You can find this by running 'python deploy_to_agentspace.py view'.
 AGENT_NAME=""
 ```
 
@@ -71,13 +84,14 @@ AGENT_NAME=""
 
 You can run the script from your terminal using the following commands.
 
-### List Reasoning Engines
+### List Agents in Agent Engine
 
-To list the available reasoning engines and find your `AGENT_RESOURCE_PATH`:
+To list the available Agents in Agent Engine and find your `AGENT_RESOURCE_PATH`:
 
 ```bash
 python deploy_to_agentspace.py list-engines
 ```
+> After running this command, copy the `Name` of the reasoning engine you want to use and paste it into the `AGENT_RESOURCE_PATH` field in your `.env` file.
 
 ### List Agentspace Apps
 
@@ -86,6 +100,7 @@ To list your Agentspace applications and find your `APP_ID`:
 ```bash
 python deploy_to_agentspace.py list-apps
 ```
+> After running this command, copy the `Name` of the Agentspace application you want to use and paste it into the `APP_ID` field in your `.env` file.
 
 ### Register an Agent
 
@@ -102,6 +117,7 @@ To see the agents that are currently registered in your Agentspace application:
 ```bash
 python deploy_to_agentspace.py view
 ```
+> After running this command, if you want to unregister an agent, copy the `Name` of the agent and paste it into the `AGENT_NAME` field in your `.env` file.
 
 ### Unregister an Agent
 
